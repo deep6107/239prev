@@ -1,0 +1,1040 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Scholarship Portal | Architecture Presentation & Simulation</title>
+    
+    <style>
+        :root {
+            --bg-navy: #0A1128;
+            --panel-bg: rgba(10, 17, 40, 0.95);
+            --neon-cyan: #00E5FF;
+            --neon-green: #00E676;
+            --neon-amber: #FFC400;
+            --neon-red: #FF1744;
+            --text-main: #FFFFFF;
+            --text-muted: #9CA3AF;
+            --border-color: #1E293B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+
+        }
+
+        body {
+            background-color: var(--bg-navy);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .font-mono { font-family: monospace, monospace; }
+
+        /* Glow effects */
+        .glow-cyan { box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), inset 0 0 10px rgba(0, 229, 255, 0.1); border: 1px solid var(--neon-cyan); }
+
+        .glow-green { box-shadow: 0 0 15px rgba(0, 230, 118, 0.3), inset 0 0 10px rgba(0, 230, 118, 0.1); border: 1px solid var(--neon-green); }
+        .glow-amber { box-shadow: 0 0 15px rgba(255, 196, 0, 0.3), inset 0 0 10px rgba(255, 196, 0, 0.1); border: 1px solid var(--neon-amber); }
+        .glow-red { box-shadow: 0 0 15px rgba(255, 23, 68, 0.3), inset 0 0 10px rgba(255, 23, 68, 0.1); border: 1px solid var(--neon-red); }
+
+        /* Layout & Nav */
+        nav {
+            background: rgba(10, 17, 40, 0.95);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        .brand-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-cyan);
+            font-size: 12px;
+        }
+
+        /* Language Selector */
+        .lang-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-navy);
+            border: 1px solid var(--border-color);
+
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .lang-box select {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+        .lang-box select option {
+            background: var(--bg-navy);
+        }
+
+        /* Tabs Menu */
+        .nav-tabs {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 0 16px 8px 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(0, 229, 255, 0.1);
+        }
+        .nav-btn {
+            background: none;
+
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 0;
+            white-space: nowrap;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--neon-cyan);
+        }
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        /* Main Container */
+        main {
+            flex-grow: 1;
+            max-width: 1200px;
+
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tech Panels & Cards */
+        .tech-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        /* Typography & Utilities */
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; text-align: center; }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+        p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+        .text-center { text-align: center; }
+        .text-cyan { color: var(--neon-cyan); }
+        .text-green { color: var(--neon-green); }
+        .text-amber { color: var(--neon-amber); }
+        .text-red { color: var(--neon-red); }
+        .mb-4 { margin-bottom: 16px; }
+
+        .mt-4 { margin-top: 16px; }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-family: monospace;
+        }
+        input, select {
+            width: 100%;
+            background: var(--bg-navy);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 4px;
+            padding: 10px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+        }
+
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn:hover {
+            background: rgba(0, 229, 255, 0.25);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+        }
+        .btn-green {
+            background: rgba(0, 230, 118, 0.1);
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+        }
+        .btn-green:hover { background: rgba(0, 230, 118, 0.25); box-shadow: 0 0 10px rgba(0, 230, 118, 0.4); }
+        .btn-red {
+
+            background: rgba(255, 23, 68, 0.1);
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+        }
+        .btn-red:hover { background: rgba(255, 23, 68, 0.25); }
+        .btn-secondary {
+            background: #1E293B;
+            color: #E2E8F0;
+            border: 1px solid #475569;
+        }
+        .btn-secondary:hover { background: #334155; }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Scheme Cards */
+        .scheme-card {
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 6px;
+            background: rgba(10, 17, 40, 0.6);
+            cursor: pointer;
+
+            transition: all 0.2s;
+        }
+        .scheme-card.selected {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 229, 255, 0.05);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+
+        /* Loader */
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { color: var(--text-muted); font-family: monospace; }
+
+        /* Audit Log Feed */
+        .audit-feed {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--neon-cyan);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .hidden { display: none !important; }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        .badge-amber { background: rgba(255,196,0,0.2); color: var(--neon-amber); border: 1px solid var(--neon-amber); }
+        .badge-green { background: rgba(0,230,118,0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .badge-red { background: rgba(255,23,68,0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 16px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-badge glow-cyan">AI</div>
+
+                <span data-i18n="portal_title">AI_SCHOLARSHIP_PORTAL</span>
+            </div>
+            
+            <div class="lang-box">
+                <span>🌐</span>
+                <select id="language-selector" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="nav-tabs" id="nav-menu">
+            <button onclick="switchTab('tab-overview')" class="nav-btn active" data-i18n="nav_overview">01. Overview</button>
+            <button onclick="switchTab('tab-student')" class="nav-btn" data-i18n="nav_student">02. Student Portal</button>
+            <button onclick="switchTab('tab-admin')" class="nav-btn" data-i18n="nav_admin">03. Admin 
+
+Hierarchy</button>
+            <button onclick="switchTab('tab-security')" class="nav-btn" data-i18n="nav_security">04. AI & Security</button>
+            <button onclick="switchTab('tab-compare')" class="nav-btn" data-i18n="nav_compare">05. Impact Matrix</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main>
+        
+        <!-- TAB 1: OVERVIEW -->
+        <section id="tab-overview" class="tab-content active">
+            <h1 data-i18n="prob_heading">The Problem & Our Solution</h1>
+            <p class="text-center mb-4" data-i18n="prob_sub">Re-engineering national scholarship disbursements through centralized digital identity and automated AI OCR verification.</p>
+
+            <div class="grid-2 mb-4">
+                <div class="tech-panel glow-red" style="border-color: rgba(255,23,68,0.4);">
+
+                    <h3 class="text-red" data-i18n="legacy_title">Legacy System Pitfalls</h3>
+                    <ul style="list-style: none; font-family: monospace; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+                        <li><span class="text-red">[!]</span> <span data-i18n="legacy_1">Months of waiting due to physical paperwork moving between desks.</span></li>
+                        <li><span class="text-red">[!]</span> <span data-i18n="legacy_2">High risk of human error, lost certificates, and forged documents.</span></li>
+                        <li><span class="text-red">[!]</span> <span data-i18n="legacy_3">Students discover document rejections only after final scholarship deadlines pass.</span></li>
+                    </ul>
+                </div>
+
+                <div class="tech-panel glow-cyan">
+                    <h3 class="text-cyan" data-i18n="sol_title">Our Integrated AI Solution</h3>
+                    <ul style="list-style: none; font-family: monospace; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 
+
+8px;">
+                        <li><span class="text-cyan">[*]</span> <span data-i18n="sol_1">Centralized Hub: Single login dashboard listing all eligible scholarship schemes.</span></li>
+                        <li><span class="text-cyan">[*]</span> <span data-i18n="sol_2">Real-Time OCR AI: Instantly reads certificates, checking authenticity and flagging defects.</span></li>
+                        <li><span class="text-cyan">[*]</span> <span data-i18n="sol_3">Full Admin Visibility: All documents pass securely to administrative queues for override.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tech-panel text-center" style="border-color: rgba(0,229,255,0.4);">
+                <h3 class="text-cyan font-mono" data-i18n="hub_title">CORE SYSTEM ARCHITECTURE HUB</h3>
+                <p class="mb-4" data-i18n="hub_sub">Select any module below to jump directly into the interactive workflow simulation.</p>
+                <div class="grid-2" style="max-width: 500px; margin: 0 auto;">
+
+                    <button onclick="switchTab('tab-student')" class="btn" data-i18n="btn_student_portal">➔ Launch Student Portal</button>
+                    <button onclick="switchTab('tab-admin')" class="btn" data-i18n="btn_admin_portal">➔ Launch Admin Hierarchy</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: STUDENT PORTAL -->
+        <section id="tab-student" class="tab-content">
+            <h2 class="text-center" data-i18n="stud_sec_title">Student Portal & AI Simulation</h2>
+            <p class="text-center mb-4" data-i18n="stud_sec_sub">Experience student login, scheme selection, and instant AI validation feedback.</p>
+
+            <div class="tech-panel" style="max-width: 700px; margin: 0 auto;">
+                <div class="flex-row mb-4" style="font-family: monospace; font-size: 11px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                    <span id="step-ind-1" class="text-cyan" 
+
+style="font-weight: bold;">1. SIGN IN</span>
+                    <span>➔</span>
+                    <span id="step-ind-2">2. SCHEME</span>
+                    <span>➔</span>
+                    <span id="step-ind-3">3. UPLOAD</span>
+                    <span>➔</span>
+                    <span id="step-ind-4">4. AI SCAN</span>
+                </div>
+
+                <!-- Step 1: Login -->
+                <div id="student-step-1" class="student-step">
+                    <h3 class="text-cyan" data-i18n="s1_head">Step 1: Authentication & Profile Setup</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label data-i18n="lbl_name">Full Name</label>
+                            <input type="text" id="std-name" value="Aarav Sharma">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_income">Family Income (₹)</label>
+                            <input type="number" id="std-income" value="180000">
+
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_cat">Category</label>
+                            <select id="std-category">
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="GEN">General / EWS</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="lbl_marks">Percentage (%)</label>
+                            <input type="number" id="std-percentage" value="88.5">
+                        </div>
+                    </div>
+                    <button onclick="proceedToSchemeSelection()" class="btn mt-4" data-i18n="btn_view_schemes">Sign In & View Eligible Schemes ➔</button>
+                </div>
+
+                <!-- Step 2: Scheme -->
+                <div id="student-step-2" class="student-
+
+step hidden">
+                    <h3 class="text-cyan">Step 2: Select Scholarship Scheme</h3>
+                    <div class="scheme-card selected mb-4" onclick="selectSchemeCard(this, 'National STEM Innovation Grant')">
+                        <div class="flex-row mb-2">
+                            <strong>National STEM Innovation Grant</strong>
+                            <span class="badge badge-green">₹50,000/yr</span>
+                        </div>
+                        <p>Eligible for Science & Tech students with >75% marks.</p>
+                    </div>
+                    <div class="flex-row">
+                        <button onclick="goToStudentStep(1)" class="btn btn-secondary" style="width: 120px;" data-i18n="btn_back">← Back</button>
+                        <button onclick="proceedToUploadDocs()" class="btn" style="width: calc(100% - 130px);">Proceed to Upload ➔</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Upload -->
+
+                <div id="student-step-3" class="student-step hidden">
+                    <h3 class="text-cyan" data-i18n="s3_head">Step 3: Upload Documents</h3>
+                    <p class="mb-4" id="selected-scheme-label">Upload your records for AI optical scan.</p>
+                    <div class="grid-2 mb-4">
+                        <div class="tech-panel text-center">
+                            <div style="font-size: 28px; margin-bottom: 8px;">📄</div>
+                            <span style="font-weight: bold; font-size: 13px;" data-i18n="doc_income">Income Certificate</span>
+                            <div class="mt-4">
+                                <select id="doc-status-income">
+                                    <option value="valid">Simulate Valid</option>
+                                    <option value="faulty">Simulate Faulty / Blurry</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tech-panel text-center">
+                            <div style="font-size: 28px; margin-bottom: 8px;">📜</div>
+                            <span style="font-weight: bold; font-size: 13px;" data-i18n="doc_caste">Caste / ID Proof</
+
+span>
+                            <div class="mt-4">
+                                <select id="doc-status-caste">
+                                    <option value="valid">Simulate Valid</option>
+                                    <option value="faulty">Simulate Faulty / Mismatched</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-row">
+                        <button onclick="goToStudentStep(2)" class="btn btn-secondary" style="width: 120px;" data-i18n="btn_back">← Back</button>
+                        <button onclick="runAiVerification()" class="btn" style="width: calc(100% - 130px);" data-i18n="btn_run_ai">Run AI Scan ⚡</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: AI Results -->
+                <div id="student-step-4" class="student-step hidden text-center">
+                    <div id="ai-scanning-loader" class="mb-4">
+                        <div class="spinner"></div>
+                        <p class="text-cyan font-mono" data-
+
+i18n="ai_scanning">[ AI OCR ] Scanning layouts & verifying records...</p>
+                    </div>
+
+                    <div id="ai-result-success" class="hidden glow-green" style="background: rgba(0,230,118,0.05); padding: 16px; border-radius: 6px; text-align: left;">
+                        <h4 class="text-green mb-2">✓ AI Verification Successful</h4>
+                        <p class="mb-4">All records authenticated. Forwarded to Admin Queue.</p>
+                        <button onclick="resetStudentPortal()" class="btn btn-green">Reset Simulator</button>
+                    </div>
+
+                    <div id="ai-result-faulty" class="hidden glow-amber" style="background: rgba(255,196,0,0.05); padding: 16px; border-radius: 6px; text-align: left;">
+                        <h4 class="text-amber mb-2">⚠️ Document Flagged by AI</h4>
+                        <p class="mb-2">Reason: <span id="faulty-reason" style="font-weight: bold;">Signature unreadable.</span></p>
+                        <p class="mb-4" style="font-size: 12px; color: var(--text-muted);">Securely routed to admin 
+
+inspection queue with defect tag for override consideration.</p>
+                        <button onclick="resetStudentPortal()" class="btn btn-secondary" data-i18n="btn_retry">Retry Upload</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ADMIN HIERARCHY -->
+        <section id="tab-admin" class="tab-content">
+            <h2 class="text-center" data-i18n="admin_sec_title">Admin Hierarchy Portal</h2>
+            <p class="text-center mb-4" data-i18n="admin_sec_sub">Select administrative level to test role permissions and document queues.</p>
+
+            <div class="flex-row mb-4" style="justify-content: center; gap: 8px;">
+                <button onclick="switchAdminRole('director')" id="role-btn-director" class="btn glow-cyan" style="width: auto;">👑 Director</button>
+                <button onclick="switchAdminRole('nodal')" id="role-btn-nodal" class="btn btn-secondary" 
+
+style="width: auto;">🛡️ Nodal Officer</button>
+                <button onclick="switchAdminRole('clerk')" id="role-btn-clerk" class="btn btn-secondary" style="width: auto;">📋 Clerk</button>
+            </div>
+
+            <div class="tech-panel" style="max-width: 800px; margin: 0 auto;">
+                <!-- Director View -->
+                <div id="admin-view-director" class="admin-view-pane">
+                    <div class="flex-row mb-4" style="background: rgba(0,229,255,0.05); padding: 10px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.2);">
+                        <div>
+                            <span style="font-size: 10px; font-family: monospace; color: var(--neon-cyan);">ACTIVE ROLE</span>
+                            <h4>Director of Higher Education (Level 1)</h4>
+                        </div>
+                        <span class="badge badge-green">Full Access</span>
+                    </div>
+                    <div class="grid-2">
+                        <div class="tech-panel">
+
+                            <h5 class="text-cyan mb-2">Create New Scheme Pipeline</h5>
+                            <p class="mb-4">Configure scheme rules and AI requirements.</p>
+                            <button onclick="alert('Scheme pipeline builder initialized.')" class="btn">Launch Builder</button>
+                        </div>
+                        <div class="tech-panel">
+                            <h5 class="text-cyan mb-2">System Analytics</h5>
+                            <p class="mb-4">Review live disbursement and pass ratios.</p>
+                            <button onclick="alert('Analytics dashboard active: 94.2% AI accuracy.')" class="btn">View Metrics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nodal View -->
+                <div id="admin-view-nodal" class="admin-view-pane hidden">
+                    <div class="flex-row mb-4" style="background: rgba(0,229,255,0.05); padding: 10px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.2);">
+
+                        <div>
+                            <span style="font-size: 10px; font-family: monospace; color: var(--neon-cyan);">ACTIVE ROLE</span>
+                            <h4>District Nodal Officer (Level 2)</h4>
+                        </div>
+                    </div>
+                    <div class="tech-panel">
+                        <h5 class="text-cyan mb-2">Approve Students & Final Disburse</h5>
+                        <p class="mb-4">Review verified records and trigger PFMS transfers.</p>
+                        <button onclick="alert('PFMS payment batch processing simulated successfully.')" class="btn btn-green">Trigger Disbursal ➔</button>
+                    </div>
+                </div>
+
+                <!-- Clerk View -->
+                <div id="admin-view-clerk" class="admin-view-pane hidden">
+                    <div class="flex-row mb-4" style="background: rgba(0,229,255,0.05); padding: 10px; border-radius: 4px; border: 1px solid rgba(0,229,255,0.2);">
+
+                        <div>
+                            <span style="font-size: 10px; font-family: monospace; color: var(--neon-cyan);">ACTIVE ROLE</span>
+                            <h4>Verifying Clerk (Level 3)</h4>
+                        </div>
+                    </div>
+                    <div class="tech-panel">
+                        <h5 class="text-cyan mb-2">Incoming Document Inspection Queue</h5>
+                        <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,196,0,0.4); padding: 12px; border-radius: 4px; margin-top: 10px;">
+                            <div class="flex-row mb-2">
+                                <strong style="font-size: 12px;">Aarav Sharma (OBC)</strong>
+                                <span class="badge badge-amber">AI_FLAGGED</span>
+                            </div>
+                            <p style="font-size: 12px; margin-bottom: 8px;">Reason: Signature unreadable / mismatch.</p>
+                            <div class="flex-row" style="justify-content: flex-start; gap: 8px;">
+                                <button onclick="resolveClerkReview('override', this)" class="btn btn-green" style="width: auto; padding: 
+
+6px 12px; font-size: 11px;">Override & Verify</button>
+                                <button onclick="resolveClerkReview('reject', this)" class="btn btn-red" style="width: auto; padding: 6px 12px; font-size: 11px;">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Log Feed -->
+                <div class="mt-4">
+                    <label style="margin-bottom: 6px;">Audit Log Feed</label>
+                    <div id="admin-audit-feed" class="audit-feed">
+                        <div>[ System ] Initialized offline role-based admin workflows.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: AI & SECURITY -->
+        <section id="tab-security" class="tab-content">
+            <h2 class="text-center" data-
+
+i18n="sec_sec_title">AI Architecture & Security</h2>
+            <p class="text-center mb-4" data-i18n="sec_sec_sub">Optical character recognition scanning and encrypted cloud storage protocols.</p>
+
+            <div class="grid-2">
+                <div class="tech-panel">
+                    <h3 class="text-cyan mb-2">AI OCR Processing Engine</h3>
+                    <p>Extracts text and values securely, comparing data against criteria and flagging issues straight to administrative queues.</p>
+                </div>
+                <div class="tech-panel">
+                    <h3 class="text-green mb-2">Data Security & Compliance</h3>
+                    <ul style="list-style: none; font-family: monospace; font-size: 13px; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px;">
+                        <li>➔ End-to-End AES-256 Encryption</li>
+                        <li>➔ Immutable Administrative Audit Logs</li>
+                        <li>➔ Zero-Trust Session Tokenization</li>
+                    </ul>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: IMPACT MATRIX -->
+        <section id="tab-compare" class="tab-content">
+            <h2 class="text-center" data-i18n="cmp_sec_title">Impact Matrix</h2>
+            <p class="text-center mb-4" data-i18n="cmp_sec_sub">Comparing traditional bureaucratic delays against our AI architecture.</p>
+
+            <div class="tech-panel" style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th style="color: var(--neon-red);">Legacy System</th>
+                            <th style="color: var(--neon-cyan);">Our AI Platform</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Processing Time</td>
+
+                            <td style="color: #F87171; background: rgba(255,23,68,0.05);">3 to 6 Months</td>
+                            <td style="color: var(--neon-green); background: rgba(0,229,255,0.05); font-weight: bold;">Minutes (OCR)</td>
+                        </tr>
+                        <tr>
+                            <td>Error Handling</td>
+                            <td style="color: #F87171; background: rgba(255,23,68,0.05);">Rejected after deadlines</td>
+                            <td style="color: var(--neon-green); background: rgba(0,229,255,0.05); font-weight: bold;">Real-time flag & admin routing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        AI_SCHOLARSHIP_PORTAL // 100% OFFLINE SECURE DEPLOYMENT
+
+    </footer>
+
+    <!-- Offline Application Script -->
+    <script>
+        const translations = {
+            en: {
+                portal_title: "AI_SCHOLARSHIP_PORTAL",
+                nav_overview: "01. Overview",
+                nav_student: "02. Student Portal",
+                nav_admin: "03. Admin Hierarchy",
+                nav_security: "04. AI & Security",
+                nav_compare: "05. Impact Matrix",
+                prob_heading: "The Problem & Our Solution",
+                prob_sub: "Re-engineering national scholarship disbursements through centralized digital identity and automated AI OCR verification.",
+                legacy_title: "Legacy System Pitfalls",
+                legacy_1: "Months of waiting due to physical paperwork moving between desks.",
+                legacy_2: "High risk of human error, lost certificates, and forged documents.",
+                legacy_3: "Students discover document rejections only after final scholarship deadlines pass.",
+                sol_title: "Our Integrated AI Solution",
+                sol_1: "Centralized Hub: Single login dashboard listing all eligible scholarship schemes.",
+
+                sol_2: "Real-Time OCR AI: Instantly reads certificates, checking authenticity and flagging defects.",
+                sol_3: "Full Admin Visibility: All documents pass securely to administrative queues for override.",
+                hub_title: "CORE SYSTEM ARCHITECTURE HUB",
+                hub_sub: "Select any module below to jump directly into the interactive workflow simulation.",
+                btn_student_portal: "➔ Launch Student Portal",
+                btn_admin_portal: "➔ Launch Admin Hierarchy",
+                stud_sec_title: "Student Portal & AI Verification Simulation",
+                stud_sec_sub: "Experience student login, scheme selection, document uploads, and instant AI validation feedback.",
+                s1_head: "Step 1: Student Authentication & Profile Setup",
+                lbl_name: "Full Name",
+                lbl_income: "Family Income (₹)",
+                lbl_cat: "Category",
+                lbl_marks: "Percentage (%)",
+                btn_view_schemes: "Sign In & View Eligible Schemes ➔",
+                s3_head: "Step 3: Upload Required 
+
+Documents",
+                doc_income: "Income Certificate",
+                doc_caste: "Caste / ID Proof",
+                btn_back: "← Back",
+                btn_run_ai: "Run AI Scan ⚡",
+                ai_scanning: "[ AI OCR ] Scanning layouts & verifying records...",
+                btn_retry: "Retry Upload",
+                admin_sec_title: "Admin Portal & Role-Based Hierarchy",
+                admin_sec_sub: "Select administrative level to test role permissions and document queues.",
+                sec_sec_title: "AI Architecture & Security",
+                sec_sec_sub: "Optical character recognition scanning and encrypted cloud storage protocols.",
+                cmp_sec_title: "Impact Matrix",
+                cmp_sec_sub: "Comparing traditional bureaucratic delays against our AI architecture."
+            },
+            hi: {
+                portal_title: "एआई छात्रवृत्ति पोर्टल",
+                nav_overview: "01. अवलोकन",
+                nav_student: "02. छात्र पोर्टल",
+                nav_admin: "03. प्रशासनिक पदानुक्रम",
+                nav_security: "04. एआई और सुरक्षा",
+                nav_compare: "05. प्रभाव मैट्रिक्स",
+                prob_heading: "समस्या और हमारा समाधान",
+
+                prob_sub: "केंद्रीकृत डिजिटल पहचान और स्वचालित एआई ओसीआर सत्यापन के माध्यम से राष्ट्रीय छात्रवृत्ति वितरण का पुनर्गठन।",
+                legacy_title: "पुरानी प्रणाली की कमियां",
+                legacy_1: "कागजी कार्रवाई डेस्क के बीच घूमने के कारण महीनों का इंतजार।",
+                legacy_2: "मानवीय त्रुटि, खोए हुए प्रमाण पत्र और जाली दस्तावेजों का उच्च जोखिम।",
+                legacy_3: "छात्रों को अंतिम समय सीमा बीतने के बाद पता चलता है कि दस्तावेज अस्वीकार कर दिए गए हैं।",
+                sol_title: "हमारा एकीकृत एआई समाधान",
+                sol_1: "केंद्रीकृत केंद्र: सभी पात्र छात्रवृत्ति योजनाओं को सूचीबद्ध करने वाला सिंगल लॉगिन डैशबोर्ड।",
+                sol_2: "रीयल-टाइम ओसीआर एआई: तुरंत प्रमाणपत्रों को पढ़ता है और त्रुटियों को चिह्नित करता है।",
+                sol_3: "पूर्ण प्रशासनिक दृश्यता: सभी दस्तावेज मैन्युअल समीक्षा के लिए सुरक्षित रूप से प्रशासनिक कतारों में जाते हैं।",
+                hub_title: "कोर सिस्टम आर्किटेक्चर हब",
+                hub_sub: "इंटरैक्टिव वर्कफ़्लो सिमुलेशन में सीधे कूदने के लिए नीचे दिए गए किसी भी मॉड्यूल का चयन करें।",
+                btn_student_portal: "➔ छात्र पोर्टल लॉन्च करें",
+                btn_admin_portal: "➔ एडमिन पदानुक्रम लॉन्च करें",
+                stud_sec_title: "छात्र पोर्टल और एआई सत्यापन सिमुलेशन",
+                stud_sec_sub: "छात्र लॉगिन, योजना चयन, दस्तावेज़ 
+
+अपलोड और त्वरित एआई सत्यापन प्रतिक्रिया का अनुभव करें।",
+                s1_head: "चरण 1: छात्र प्रमाणीकरण और प्रोफ़ाइल सेटअप",
+                lbl_name: "पूरा नाम",
+                lbl_income: "पारिवारिक आय (₹)",
+                lbl_cat: "श्रेणी",
+                lbl_marks: "प्रतिशत (%)",
+                btn_view_schemes: "साइन इन करें और पात्र योजनाएं देखें ➔",
+                s3_head: "चरण 3: आवश्यक दस्तावेज अपलोड करें",
+                doc_income: "आय प्रमाण पत्र",
+                doc_caste: "जाति / पहचान प्रमाण",
+                btn_back: "← पीछे",
+                btn_run_ai: "एआई स्कैन चलाएं ⚡",
+                ai_scanning: "[ AI OCR ] दस्तावेज़ लेआउट स्कैन हो रहा है...",
+                btn_retry: "पुनः प्रयास करें",
+                admin_sec_title: "एडमिन पोर्टल और भूमिका-आधारित पदानुक्रम",
+                admin_sec_sub: "अनुमति-आधारित स्क्रीन का परीक्षण करने के लिए नीचे अपना प्रशासनिक पद चुनें।",
+                sec_sec_title: "एआई वास्तुकला और सुरक्षा",
+                sec_sec_sub: "ऑप्टिकल कैरेक्टर रिकग्निशन स्कैनिंग और एन्क्रिप्टेड क्लाउड स्टोरेज।",
+                cmp_sec_title: "प्रभाव मैट्रिक्स",
+                cmp_sec_sub: "पारंपरिक नौकरशाही छात्रवृत्ति देरी की तुलना हमारे एआई वास्तुकला से करना।"
+
+            },
+            mr: {
+                portal_title: "एआय शिष्यवृत्ती पोर्टल",
+                nav_overview: "01. पुनरावलोकन",
+                nav_student: "02. विद्यार्थी पोर्टल",
+                nav_admin: "03. प्रशासकीय उतरंड",
+                nav_security: "04. एआय आणि सुरक्षा",
+                nav_compare: "05. प्रभाव मॅट्रिक्स",
+                prob_heading: "समस्या आणि आमचे उपाय",
+                prob_sub: "केंद्रीय डिजिटल ओळख आणि स्वयंचलित एआय ओसीआर पडताळणीद्वारे राष्ट्रीय शिष्यवृत्ती वितरणाची पुनर्रचना.",
+                legacy_title: "जुन्या प्रणालीतील त्रुटी",
+                legacy_1: "कागदपत्रे डेस्क दरम्यान फिरत असल्याने महिनोंमहिने प्रतीक्षा.",
+                legacy_2: "मानवी चुका, गहाळ प्रमाणपत्रे आणि बनावट कागदपत्रांचा उच्च धोका.",
+                legacy_3: "अंतिम मुदत संपल्यानंतर विद्यार्थ्यांना कागदपत्रे नाकारल्याचे समजते.",
+                sol_title: "आमचा एकात्मिक एआय उपाय",
+                sol_1: "केंद्रीय केंद्र: सर्व पात्र शिष्यवृत्ती योजनांची सूची देणारा सिंगल लॉगिन डॅशबोर्ड.",
+                sol_2: "रिअल-टाइम ओसीआर एआय: त्वरित प्रमाणपत्रे वाचते आणि त्रुटी शोधते.",
+                sol_3: "पूर्ण प्रशासकीय दृश्यमानता: सर्व कागदपत्रे सुरक्षितपणे प्रशासकीय रांगेत जातात.",
+                hub_title: "मुख्य प्रणाली आर्किटेक्चर हब",
+
+                hub_sub: "परस्परसंवादी वर्कफ्लो सिम्युलेशनमध्ये जाण्यासाठी खालील मॉड्यूल निवडा.",
+                btn_student_portal: "➔ विद्यार्थी पोर्टल लाँच करा",
+                btn_admin_portal: "➔ प्रशासक उतरंड लाँच करा",
+                stud_sec_title: "विद्यार्थी पोर्टल आणि एआय पडताळणी सिम्युलेशन",
+                stud_sec_sub: "विद्यार्थी लॉगिन, योजना निवड, कागदपत्र अपलोड आणि त्वरित एआय अभिप्राय अनुभवा.",
+                s1_head: "पायरी १: विद्यार्थी प्रमाणिकरण आणि प्रोफाइल सेटअप",
+                lbl_name: "पूर्ण नाव",
+                lbl_income: "कौटुंबिक उत्पन्न (₹)",
+                lbl_cat: "वर्ग",
+                lbl_marks: "टक्केवारी (%)",
+                btn_view_schemes: "साइन इन करा आणि पात्र योजना पहा ➔",
+                s3_head: "पायरी ३: आवश्यक कागदपत्रे अपलोड करा",
+                doc_income: "उत्पन्न प्रमाणपत्र",
+                doc_caste: "जात / ओळख पुरावा",
+                btn_back: "← मागे",
+                btn_run_ai: "एआय स्कॅन चालवा ⚡",
+                ai_scanning: "[ AI OCR ] कागदपत्रे स्कॅन करत आहे...",
+                btn_retry: "पुन्हा प्रयत्न करा",
+                admin_sec_title: "प्रशासक पोर्टल आणि भूमिका-आधारित उतरंड",
+
+                admin_sec_sub: "परवानगी-आधारित स्क्रीन तपासण्यासाठी तुमचे प्रशासकीय पद निवडा.",
+                sec_sec_title: "एआय आर्किटेक्चर आणि सुरक्षा",
+                sec_sec_sub: "ऑप्टिकल कॅरेक्टर रिकग्निशन स्कॅनिंग आणि एन्क्रिप्टेड क्लाउड स्टोरेज.",
+                cmp_sec_title: "प्रभाव मॅट्रिक्स",
+                cmp_sec_sub: "पारंपारिक नोकरशाही विलंबाची तुलना आमच्या एआय आर्किटेक्चरशी करणे."
+            },
+            es: {
+                portal_title: "PORTAL_DE_BECAS_AI",
+                nav_overview: "01. Resumen",
+                nav_student: "02. Portal Estudiantil",
+                nav_admin: "03. Jerarquía Admin",
+                nav_security: "04. IA y Seguridad",
+                nav_compare: "05. Matriz de Impacto",
+                prob_heading: "El Problema y Nuestra Solución",
+                prob_sub: "Reingeniería de los desembolsos de becas nacionales a través de identidad digital centralizada y verificación OCR por IA.",
+                legacy_title: "Defectos del Sistema Tradicional",
+                legacy_1: "Meses de espera debido al papeleo físico entre escritorios.",
+                legacy_2: "Alto riesgo de error humano, pérdida de certificados y documentos falsificados.",
+
+                legacy_3: "Los estudiantes descubren rechazos de documentos solo después de que vencen los plazos.",
+                sol_title: "Nuestra Solución Integrada de IA",
+                sol_1: "Centro Centralizado: Panel de inicio de sesión único con becas elegibles.",
+                sol_2: "IA OCR en Tiempo Real: Lee instantáneamente certificados y marca defectos.",
+                sol_3: "Visibilidad Administrativa Total: Envío seguro de documentos a colas de revisión.",
+                hub_title: "CENTRO DE ARQUITECTURA DEL SISTEMA",
+                hub_sub: "Seleccione cualquier módulo a continuación para saltar a la simulación interactiva.",
+                btn_student_portal: "➔ Iniciar Portal Estudiantil",
+                btn_admin_portal: "➔ Iniciar Jerarquía Admin",
+                stud_sec_title: "Portal Estudiantil y Simulación de Verificación IA",
+                stud_sec_sub: "Experimente el inicio de sesión, selección de esquemas y validación instantánea por IA.",
+                s1_head: "Paso 1: Autenticación de Estudiante y Perfil",
+                lbl_name: "Nombre Completo",
+
+                lbl_income: "Ingreso Familiar (₹)",
+                lbl_cat: "Categoría",
+                lbl_marks: "Porcentaje (%)",
+                btn_view_schemes: "Iniciar Sesión y Ver Esquemas ➔",
+                s3_head: "Paso 3: Subir Documentos Requeridos",
+                doc_income: "Certificado de Ingresos",
+                doc_caste: "Prueba de Identidad / Casta",
+                btn_back: "← Atrás",
+                btn_run_ai: "Ejecutar IA ⚡",
+                ai_scanning: "[ AI OCR ] Escaneando diseños...",
+                btn_retry: "Reintentar",
+                admin_sec_title: "Portal Admin y Jerarquía Basada en Roles",
+                admin_sec_sub: "Seleccione su posición administrativa para probar pantallas de permisos.",
+                sec_sec_title: "Arquitectura de IA y Seguridad",
+                sec_sec_sub: "Escaneo OCR y almacenamiento en la nube cifrado.",
+                cmp_sec_title: "Matriz de Impacto",
+                cmp_sec_sub: "Comparación de retrasos burocráticos tradicionales frente a nuestra arquitectura."
+            }
+
+        };
+
+        function changeLanguage(lang) {
+            const translation = translations[lang] || translations['en'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translation[key]) {
+                    el.innerText = translation[key];
+                }
+            });
+        }
+
+        function switchTab(targetId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            
+            document.querySelectorAll('#nav-menu button').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`#nav-menu button[onclick*="${targetId}"]`);
+
+            if(activeBtn) activeBtn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let selectedSchemeName = "National STEM Innovation Grant";
+
+        function proceedToSchemeSelection() {
+            document.getElementById('student-step-1').classList.add('hidden');
+            document.getElementById('student-step-2').classList.remove('hidden');
+            document.getElementById('step-ind-1').style.color = 'var(--text-muted)';
+            document.getElementById('step-ind-1').style.fontWeight = 'normal';
+            document.getElementById('step-ind-2').style.color = 'var(--neon-cyan)';
+            document.getElementById('step-ind-2').style.fontWeight = 'bold';
+        }
+
+        function selectSchemeCard(cardElement, schemeName) {
+            selectedSchemeName = schemeName;
+            document.querySelectorAll('.scheme-card').forEach(c => c.classList.remove('selected'));
+
+            cardElement.classList.add('selected');
+        }
+
+        function proceedToUploadDocs() {
+            document.getElementById('student-step-2').classList.add('hidden');
+            document.getElementById('student-step-3').classList.remove('hidden');
+            document.getElementById('step-ind-2').style.color = 'var(--text-muted)';
+            document.getElementById('step-ind-2').style.fontWeight = 'normal';
+            document.getElementById('step-ind-3').style.color = 'var(--neon-cyan)';
+            document.getElementById('step-ind-3').style.fontWeight = 'bold';
+            document.getElementById('selected-scheme-label').innerText = `Selected: ${selectedSchemeName}. Upload required records for AI scan.`;
+        }
+
+        function goToStudentStep(stepNum) {
+            document.querySelectorAll('.student-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`student-step-${stepNum}`).classList.remove('hidden');
+
+            
+            for(let i=1; i<=4; i++) {
+                const ind = document.getElementById(`step-ind-${i}`);
+                if(ind) {
+                    ind.style.color = (i === stepNum) ? 'var(--neon-cyan)' : 'var(--text-muted)';
+                    ind.style.fontWeight = (i === stepNum) ? 'bold' : 'normal';
+                }
+            }
+        }
+
+        function runAiVerification() {
+            document.getElementById('student-step-3').classList.add('hidden');
+            document.getElementById('student-step-4').classList.remove('hidden');
+            for(let i=1; i<=4; i++) {
+                document.getElementById(`step-ind-${i}`).style.color = 'var(--text-muted)';
+                document.getElementById(`step-ind-${i}`).style.fontWeight = 'normal';
+            }
+            document.getElementById('step-ind-4').style.color = 'var(--neon-cyan)';
+            document.getElementById('step-
+
+ind-4').style.fontWeight = 'bold';
+
+            document.getElementById('ai-scanning-loader').classList.remove('hidden');
+            document.getElementById('ai-result-success').classList.add('hidden');
+            document.getElementById('ai-result-faulty').classList.add('hidden');
+
+            const incomeStatus = document.getElementById('doc-status-income').value;
+            const casteStatus = document.getElementById('doc-status-caste').value;
+
+            setTimeout(() => {
+                document.getElementById('ai-scanning-loader').classList.add('hidden');
+                if (incomeStatus === 'valid' && casteStatus === 'valid') {
+                    document.getElementById('ai-result-success').classList.remove('hidden');
+                    appendAuditFeed("System AI OCR: Document scan verified successfully. Record queued.");
+                } else {
+                    document.getElementById('ai-result-
+
+faulty').classList.remove('hidden');
+                    const reasonText = incomeStatus === 'faulty' ? "Income Certificate signature blurred / unreadable." : "Caste ID document name mismatch.";
+                    document.getElementById('faulty-reason').innerText = reasonText;
+                    appendAuditFeed(`System AI OCR: Defect detected (${reasonText}). Forwarded to Admin Queue.`);
+                }
+            }, 1500);
+        }
+
+        function resetStudentPortal() {
+            goToStudentStep(1);
+        }
+
+        function switchAdminRole(role) {
+            document.querySelectorAll('.admin-view-pane').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`admin-view-${role}`).classList.remove('hidden');
+
+            ['director', 'nodal', 'clerk'].forEach(r => {
+                const btn = document.getElementById(`role-btn-${r}`);
+                if(r === role) {
+
+                    btn.className = "btn glow-cyan";
+                } else {
+                    btn.className = "btn btn-secondary";
+                }
+            });
+        }
+
+        function resolveClerkReview(action, btnElement) {
+            const card = btnElement.closest('div');
+            if(action === 'override') {
+                appendAuditFeed("Clerk Action: Performed manual override on flagged document. Status: Verified.");
+                card.style.borderColor = 'var(--neon-green)';
+                btnElement.closest('.flex-row').innerHTML = '<span class="badge badge-green">MANUAL_OVERRIDE_VERIFIED</span>';
+            } else {
+                appendAuditFeed("Clerk Action: Rejected application due to discrepancies.");
+                card.style.borderColor = 'var(--neon-red)';
+                btnElement.closest('.flex-row').innerHTML = '<span class="badge badge-red">APPLICATION_REJECTED</span>';
+            }
+        }
+
+
+        function appendAuditFeed(message) {
+            const feed = document.getElementById('admin-audit-feed');
+            if(feed) {
+                const entry = document.createElement('div');
+                entry.innerText = `[ ${new Date().toLocaleTimeString()} ] ${message}`;
+                feed.prepend(entry);
+            }
+        }
+    </script>
+</body>
+</html>
